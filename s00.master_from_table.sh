@@ -76,7 +76,7 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
         C=$(sbatch --parsable --dependency=afterok:$B --job-name="${project}_demux" \
             --output="$LOG_DIR/s03.demux.out" \
             --error="$LOG_DIR/s03.demux.err" \
-            "$SCRIPT_DIR/s03.demux.sh" "$workdir" "$project")
+            "$SCRIPT_DIR/s03.demux.sh" "$workdir" "$project" "$kit_name")
 
         D=$(sbatch --parsable --dependency=afterok:$C --job-name="${project}_index" \
             --output="$LOG_DIR/s04.indexing.out" \
