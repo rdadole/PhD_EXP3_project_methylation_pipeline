@@ -42,7 +42,7 @@ else
         echo "Processing barcode $barcode_nb"
 
         # Define input and output file paths explicitly
-        input_bam="$workdir/analysis/${project}_${kit_name}_barcode${barcode_nb}.bam"
+        input_bam="$workdir/analysis/${project}_barcode${barcode_nb}.bam"
         sorted_bam="$workdir/analysis/${project}_barcode${barcode_nb}_sorted.bam"
 
         # Check if the input file exists before processing

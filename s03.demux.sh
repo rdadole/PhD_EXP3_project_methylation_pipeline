@@ -29,12 +29,18 @@ dorado demux \
 echo "Demultiplexing complete. Renaming output files..."
 
 # Loop through the default output files and rename them to include the project prefix.
-# The pattern '*_barcode_*.bam' correctly matches the expected output format of '{kit_name}_barcode_??.bam'.
-for f in *_barcode_*.bam unclassified.bam; do
-    # Check if a file matching the pattern exists to avoid errors from the shell.
+for f in *_barcode*.bam unclassified.bam; do
+    # Check if a file matching the pattern exists to avoid errors.
     if [ -f "$f" ]; then
-        mv -- "$f" "${project}_$f"
-        echo "Renamed $f to ${project}_$f"
+        # Remove the prefix from the filename.
+        # ${f##*_} removes everything from the beginning of the string up to the last underscore.
+        # For "KIT_barcode01.bam", this results in "barcode01.bam".
+        # For "unclassified.bam" (no underscore), it results in "unclassified.bam".
+        new_suffix="${f##*_}"
+        
+        # Construct the new filename and rename the file.
+        mv -- "$f" "${project}_${new_suffix}"
+        echo "Renamed $f to ${project}_${new_suffix}"
     fi
 done
 
