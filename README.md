@@ -30,7 +30,7 @@ The script will iterate through the rows and perform the configured pipeline for
 
 ---
 
-## Example `samples.tsv` (contents from uploaded file)
+## Example `samples_example.tsv` (contents from uploaded file)
 
 | project   | workdir              | reference          | kit_name        | sample_barcode    |
 |---|---|---|---|---|
