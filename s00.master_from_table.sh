@@ -23,6 +23,9 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 # Reads the sample sheet line by line, skipping the header
 tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference kit_name sample_barcode; do
     
+    # Sanitize the sample_barcode variable to remove any trailing carriage return
+    sample_barcode=${sample_barcode%$'\r'}
+    
     echo "================================================="
     echo "🚀 Launching pipeline for project: $project"
     echo "   Work Directory: $workdir"
