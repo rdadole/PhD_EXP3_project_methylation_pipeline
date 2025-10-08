@@ -23,8 +23,8 @@ cd "$workdir/analysis/"
 # Run dorado demux. The --output-dir is no longer needed as we are in the target directory.
 # The invalid --output-prefix parameter has been removed.
 dorado demux \
-    --no-classify -o . \
-    "./${project}_aligned.bam"
+    --no-classify -o ./ \
+    "${project}_aligned.bam"
 
 echo "Demultiplexing complete. Renaming output files..."
 
