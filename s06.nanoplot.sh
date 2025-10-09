@@ -15,8 +15,7 @@ module load nanoplot/1.44.1
 # --- Parameters ---
 workdir=$1
 project=$2
-kit_name=$3 # Passed but not used.
-barcodes=$4
+barcodes=$3
 
 # --- Command ---
 if [ "$barcodes" == "NA" ]; then
