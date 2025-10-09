@@ -14,8 +14,7 @@ module load samtools/1.21
 # --- Parameters ---
 workdir=$1
 project=$2
-kit_name=$3
-barcodes=$4
+barcodes=$3
 
 # --- Command ---
 if [ "$barcodes" == "NA" ]; then

@@ -60,17 +60,31 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
         D=$(sbatch --parsable --dependency=afterok:$B --job-name="${project}_index" \
             --output="$LOG_DIR/s04.indexing.out" \
             --error="$LOG_DIR/s04.indexing.err" \
-            "$SCRIPT_DIR/s04.indexing.sh" "$workdir" "$project" "$kit_name" "$sample_barcode")
+            "$SCRIPT_DIR/s04.indexing.sh" "$workdir" "$project" "$sample_barcode")
 
-        E=$(sbatch --parsable --dependency=afterok:$D --job-name="${project}_pileup" \
-            --output="$LOG_DIR/s05.pileup.out" \
-            --error="$LOG_DIR/s05.pileup.err" \
-            "$SCRIPT_DIR/s05.pileup.sh" "$workdir" "$project" "$kit_name" "$sample_barcode" "$reference")
+        # Step E: Parallel Pileup Submission (MODIFIED BLOCK)
+        echo "   -> Submitting parallel pileup jobs."
+        E_all=$(sbatch --parsable --dependency=afterok:$D --job-name="${project}_pileup_all" \
+            --output="$LOG_DIR/s05a.pileup_all.out" --error="$LOG_DIR/s05a.pileup_all.err" \
+            "$SCRIPT_DIR/s05a.pileup_all.sh" "$workdir" "$project" "$sample_barcode" "$reference")
+        
+        E_cg=$(sbatch --parsable --dependency=afterok:$D --job-name="${project}_pileup_cg" \
+            --output="$LOG_DIR/s05b.pileup_cg.out" --error="$LOG_DIR/s05b.pileup_cg.err" \
+            "$SCRIPT_DIR/s05b.pileup_cg.sh" "$workdir" "$project" "$sample_barcode" "$reference")
 
-        F=$(sbatch --parsable --dependency=afterok:$E --job-name="${project}_nanoplot" \
+        E_chg=$(sbatch --parsable --dependency=afterok:$D --job-name="${project}_pileup_chg" \
+            --output="$LOG_DIR/s05c.pileup_chg.out" --error="$LOG_DIR/s05c.pileup_chg.err" \
+            "$SCRIPT_DIR/s05c.pileup_chg.sh" "$workdir" "$project" "$sample_barcode" "$reference")
+
+        E_chh=$(sbatch --parsable --dependency=afterok:$D --job-name="${project}_pileup_chh" \
+            --output="$LOG_DIR/s05d.pileup_chh.out" --error="$LOG_DIR/s05d.pileup_chh.err" \
+            "$SCRIPT_DIR/s05d.pileup_chh.sh" "$workdir" "$project" "$sample_barcode" "$reference")
+
+        # Step F: Nanoplot (depends on all four pileup jobs finishing)
+        F=$(sbatch --parsable --dependency=afterok:$E_all:$E_cg:$E_chg:$E_chh --job-name="${project}_nanoplot" \
             --output="$LOG_DIR/s06.nanoplot.out" \
             --error="$LOG_DIR/s06.nanoplot.err" \
-            "$SCRIPT_DIR/s06.nanoplot.sh" "$workdir" "$project" "$kit_name" "$sample_barcode")
+            "$SCRIPT_DIR/s06.nanoplot.sh" "$workdir" "$project" "$sample_barcode")
 
     else
         # --- MULTIPLEXED WORKFLOW (Original logic) ---
@@ -84,17 +98,31 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
         D=$(sbatch --parsable --dependency=afterok:$C --job-name="${project}_index" \
             --output="$LOG_DIR/s04.indexing.out" \
             --error="$LOG_DIR/s04.indexing.err" \
-            "$SCRIPT_DIR/s04.indexing.sh" "$workdir" "$project" "$kit_name" "$sample_barcode")
+            "$SCRIPT_DIR/s04.indexing.sh" "$workdir" "$project" "$sample_barcode")
 
-        E=$(sbatch --parsable --dependency=afterok:$D --job-name="${project}_pileup" \
-            --output="$LOG_DIR/s05.pileup.out" \
-            --error="$LOG_DIR/s05.pileup.err" \
-            "$SCRIPT_DIR/s05.pileup.sh" "$workdir" "$project" "$kit_name" "$sample_barcode" "$reference")
+        # Step E: Parallel Pileup Submission (MODIFIED BLOCK)
+        echo "   -> Submitting parallel pileup jobs."
+        E_all=$(sbatch --parsable --dependency=afterok:$D --job-name="${project}_pileup_all" \
+            --output="$LOG_DIR/s05a.pileup_all.out" --error="$LOG_DIR/s05a.pileup_all.err" \
+            "$SCRIPT_DIR/s05a.pileup_all.sh" "$workdir" "$project" "$sample_barcode" "$reference")
+        
+        E_cg=$(sbatch --parsable --dependency=afterok:$D --job-name="${project}_pileup_cg" \
+            --output="$LOG_DIR/s05b.pileup_cg.out" --error="$LOG_DIR/s05b.pileup_cg.err" \
+            "$SCRIPT_DIR/s05b.pileup_cg.sh" "$workdir" "$project" "$sample_barcode" "$reference")
 
-        F=$(sbatch --parsable --dependency=afterok:$E --job-name="${project}_nanoplot" \
+        E_chg=$(sbatch --parsable --dependency=afterok:$D --job-name="${project}_pileup_chg" \
+            --output="$LOG_DIR/s05c.pileup_chg.out" --error="$LOG_DIR/s05c.pileup_chg.err" \
+            "$SCRIPT_DIR/s05c.pileup_chg.sh" "$workdir" "$project" "$sample_barcode" "$reference")
+
+        E_chh=$(sbatch --parsable --dependency=afterok:$D --job-name="${project}_pileup_chh" \
+            --output="$LOG_DIR/s05d.pileup_chh.out" --error="$LOG_DIR/s05d.pileup_chh.err" \
+            "$SCRIPT_DIR/s05d.pileup_chh.sh" "$workdir" "$project" "$sample_barcode" "$reference")
+
+        # Step F: Nanoplot (depends on all four pileup jobs finishing)
+        F=$(sbatch --parsable --dependency=afterok:$E_all:$E_cg:$E_chg:$E_chh --job-name="${project}_nanoplot" \
             --output="$LOG_DIR/s06.nanoplot.out" \
             --error="$LOG_DIR/s06.nanoplot.err" \
-            "$SCRIPT_DIR/s06.nanoplot.sh" "$workdir" "$project" "$kit_name" "$sample_barcode")
+            "$SCRIPT_DIR/s06.nanoplot.sh" "$workdir" "$project" "$sample_barcode")
     fi
 
     echo "✅ All jobs for project '$project' submitted. Final job ID: $F"
