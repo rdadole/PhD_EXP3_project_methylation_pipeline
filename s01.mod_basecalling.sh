@@ -31,3 +31,4 @@ else
         "$workdir/pod5/" \
         --device "cuda:$CUDA_VISIBLE_DEVICES" --kit-name $kit_name\
         --modified-bases 5mC_5hmC > $workdir/analysis/$project".bam"
+fi
