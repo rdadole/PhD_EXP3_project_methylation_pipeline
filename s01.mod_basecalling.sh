@@ -14,8 +14,20 @@ module load dorado/0.9.6
 project=$2
 workdir=$1
 kit_name=$3
+barcodes=$4
 
-dorado basecaller sup@v4.3.0 \
-    "$workdir/pod5/" \
-    --device "cuda:$CUDA_VISIBLE_DEVICES" --kit-name $kit_name\
-    --modified-bases 5mC_5hmC > $workdir/analysis/$project".bam"
+if [ "$barcodes" == "NA" ]; then
+    echo "Processing non-multiplexed sample"
+
+    dorado basecaller sup@v4.3.0 \
+        "$workdir/pod5/" \
+        --device "cuda:$CUDA_VISIBLE_DEVICES"\
+        --modified-bases 5mC_5hmC > $workdir/analysis/$project".bam"
+
+else
+    echo "Processing multiplexed sample"
+
+    dorado basecaller sup@v4.3.0 \
+        "$workdir/pod5/" \
+        --device "cuda:$CUDA_VISIBLE_DEVICES" --kit-name $kit_name\
+        --modified-bases 5mC_5hmC > $workdir/analysis/$project".bam"

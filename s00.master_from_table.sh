@@ -43,7 +43,7 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
     A=$(sbatch --parsable --job-name="${project}_basecall" \
         --output="$LOG_DIR/s01.modbasecalling.out" \
         --error="$LOG_DIR/s01.modbasecalling.err" \
-        "$SCRIPT_DIR/s01.mod_basecalling.sh" "$workdir" "$project" "$kit_name")
+        "$SCRIPT_DIR/s01.mod_basecalling.sh" "$workdir" "$project" "$kit_name" "$sample_barcode")
 
     # Step B: Alignment (common for both workflows)
     B=$(sbatch --parsable --dependency=afterok:$A --job-name="${project}_align" \
