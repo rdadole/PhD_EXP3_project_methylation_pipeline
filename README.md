@@ -21,7 +21,7 @@ Use the table `samples.tsv` (tab-separated) with the following columns:
 ## Before running
 
 Before running the pipeline there is a need to index the reference genome.
-This can be achieve with script `preparations/genome_indexing.sh` and modifying the variable "reference" to the pacth of you reference genome, then run :
+This can be achieve with script `preparations/genome_indexing.sh` and modifying the variable "reference" to the path of you reference genome, then run :
 ```bash 
 sbatch genome_indexing.sh
 ```
