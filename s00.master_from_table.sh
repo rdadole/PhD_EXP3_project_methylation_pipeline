@@ -125,7 +125,7 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
             "$SCRIPT_DIR/s06.nanoplot.sh" "$workdir" "$project" "$sample_barcode")
     fi
 
-    echo "✅ All jobs for project '$project' submitted. Final job IDs: \n$E_all\n$E_cg\n$E_chg\n$E_chh\n$F"
+    echo "✅ All jobs for project '$project' submitted. Final job IDs: $E_all $E_cg $E_chg $E_chh $F"
     echo ""
 
 done
