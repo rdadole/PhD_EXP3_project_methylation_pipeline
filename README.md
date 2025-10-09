@@ -18,6 +18,15 @@ Use the table `samples.tsv` (tab-separated) with the following columns:
 | `kit_name`      | Name of the ONT kit used (e.g. `SQK-RBK114-24`). |
 | `sample_barcode`| Space-separated sample numbers **with two digits each** (e.g. `01 02 03`). If there was no multiplexing, use `NA`. *Note: `01` works but `1` does not — barcodes must be two-digit.* |
 
+## Before running
+
+Before running the pipeline there is a need to index the reference genome.
+This can be achieve with script `preparations/genome_indexing.sh` and modifying the variable "reference" to the pacth of you reference genome, then run :
+```bash 
+sbatch genome_indexing.sh
+```
+You should see a file ending in ".fai" next to your reference genome. 
+
 ## How to run
 
 Place the `samples.tsv` file in the repo root (or point the script to it), then run:
@@ -43,3 +52,4 @@ The script will iterate through the rows and perform the configured pipeline for
 - `workdir` must point to the parent directory that contains the `pod5` folder; the pipeline expects to find raw ONT data there.
 - `sample_barcode` values must be two-digit barcode identifiers separated by spaces; for example `01 02` not `1 2`. Use `NA` when samples were run singleplex and there are no barcodes.
 - `project` names should be filesystem-safe (no slashes or unusual characters) because they are used to name files and directories.
+- This pipeline is designed for plants in mind so methylation counts in CHG and CHH context are also extracted.
