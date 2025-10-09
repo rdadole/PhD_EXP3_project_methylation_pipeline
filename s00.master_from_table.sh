@@ -65,7 +65,7 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
         E=$(sbatch --parsable --dependency=afterok:$D --job-name="${project}_pileup" \
             --output="$LOG_DIR/s05.pileup.out" \
             --error="$LOG_DIR/s05.pileup.err" \
-            "$SCRIPT_DIR/s05.pileup.sh" "$workdir" "$project" "$kit_name" "$sample_barcode")
+            "$SCRIPT_DIR/s05.pileup.sh" "$workdir" "$project" "$kit_name" "$sample_barcode" "$reference")
 
         F=$(sbatch --parsable --dependency=afterok:$E --job-name="${project}_nanoplot" \
             --output="$LOG_DIR/s06.nanoplot.out" \
@@ -89,7 +89,7 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
         E=$(sbatch --parsable --dependency=afterok:$D --job-name="${project}_pileup" \
             --output="$LOG_DIR/s05.pileup.out" \
             --error="$LOG_DIR/s05.pileup.err" \
-            "$SCRIPT_DIR/s05.pileup.sh" "$workdir" "$project" "$kit_name" "$sample_barcode")
+            "$SCRIPT_DIR/s05.pileup.sh" "$workdir" "$project" "$kit_name" "$sample_barcode" "$reference")
 
         F=$(sbatch --parsable --dependency=afterok:$E --job-name="${project}_nanoplot" \
             --output="$LOG_DIR/s06.nanoplot.out" \
