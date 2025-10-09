@@ -7,6 +7,8 @@
 #SBATCH --output=./Logs/s03.Split_barcode.out
 #SBATCH --error=./Logs/s03.Split_barcode.err
 
+set -e
+
 module load all gencore/3
 module load dorado/0.9.6
 

@@ -5,6 +5,8 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
 
+set -e
+
 # --- Load Modules ---
 module load all gencore/3
 module load ont-modkit/0.4.3

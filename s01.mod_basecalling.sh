@@ -7,6 +7,7 @@
 #SBATCH -t 4-0:00
 #SBATCH --output=./Logs/s01.modbasecalling.out
 #SBATCH --error=./Logs/s01.modbasecalling.err
+set -e
 
 module load all gencore/3
 module load dorado/0.9.6

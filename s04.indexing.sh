@@ -8,6 +8,8 @@
 #SBATCH --output=./Logs/s04.sort_and_indexing.out
 #SBATCH --error=./Logs/s04.sort_and_indexing.err
 
+set -e
+
 module load all gencore/3
 module load samtools/1.21
 

@@ -7,6 +7,8 @@
 #SBATCH --output=./Logs/s02.aligner.out
 #SBATCH --error=./Logs/s02.aligner.err
 
+set -e
+
 module load all gencore/3
 module load dorado/0.9.6
 
