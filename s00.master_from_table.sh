@@ -81,7 +81,7 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
             "$SCRIPT_DIR/s05d.pileup_chh.sh" "$workdir" "$project" "$sample_barcode" "$reference")
 
         # Step F: Nanoplot (depends on all four pileup jobs finishing)
-        F=$(sbatch --parsable --dependency=afterok:$E_all:$E_cg:$E_chg:$E_chh --job-name="${project}_nanoplot" \
+        F=$(sbatch --parsable --dependency=afterok:$D --job-name="${project}_nanoplot" \
             --output="$LOG_DIR/s06.nanoplot.out" \
             --error="$LOG_DIR/s06.nanoplot.err" \
             "$SCRIPT_DIR/s06.nanoplot.sh" "$workdir" "$project" "$sample_barcode")
@@ -119,13 +119,13 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
             "$SCRIPT_DIR/s05d.pileup_chh.sh" "$workdir" "$project" "$sample_barcode" "$reference")
 
         # Step F: Nanoplot (depends on all four pileup jobs finishing)
-        F=$(sbatch --parsable --dependency=afterok:$E_all:$E_cg:$E_chg:$E_chh --job-name="${project}_nanoplot" \
+        F=$(sbatch --parsable --dependency=afterok:$D --job-name="${project}_nanoplot" \
             --output="$LOG_DIR/s06.nanoplot.out" \
             --error="$LOG_DIR/s06.nanoplot.err" \
             "$SCRIPT_DIR/s06.nanoplot.sh" "$workdir" "$project" "$sample_barcode")
     fi
 
-    echo "✅ All jobs for project '$project' submitted. Final job ID: $F"
+    echo "✅ All jobs for project '$project' submitted. Final job IDs: \n$E_all\n$E_cg\n$E_chg\n$E_chh\n$F"
     echo ""
 
 done
