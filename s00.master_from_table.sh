@@ -21,15 +21,26 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # --- Read Sample Sheet and Launch Jobs ---
 # Reads the sample sheet line by line, skipping the header
-tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference kit_name sample_barcode; do
+# MODIFIED: Included 'basecalled' column
+tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference kit_name sample_barcode basecalled; do
     
-    # Sanitize the sample_barcode variable to remove any trailing carriage return
+    # Sanitize variables to remove any trailing carriage return
     sample_barcode=${sample_barcode%$'\r'}
+    basecalled=${basecalled%$'\r'}
+
+    # Set default for 'basecalled' to 'No' if the column is empty
+    if [ -z "$basecalled" ]; then
+        basecalled="No"
+    fi
+
+    # Convert the basecalled status to lowercase for robust checking
+    BASECALLED_STATUS=$(echo "$basecalled" | tr '[:upper:]' '[:lower:]')
     
     echo "================================================="
     echo "🚀 Launching pipeline for project: $project"
     echo "   Work Directory: $workdir"
     echo "   Barcodes: $sample_barcode"
+    echo "   Basecalling Status: $basecalled"
     echo "================================================="
 
     # Define and create project-specific directories for logs and analysis
@@ -37,15 +48,25 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
     mkdir -p "$LOG_DIR"
     mkdir -p "$workdir/analysis"
 
+    # Initialize job ID for Step A (Basecalling/Skip). Start with 0 (satisfied).
+    A=0
+
     # --- Job Submission ---
     
-    # Step A: Basecalling (common for both workflows)
-    A=$(sbatch --parsable --job-name="${project}_basecall" \
-        --output="$LOG_DIR/s01.modbasecalling.out" \
-        --error="$LOG_DIR/s01.modbasecalling.err" \
-        "$SCRIPT_DIR/s01.mod_basecalling.sh" "$workdir" "$project" "$kit_name" "$sample_barcode")
+    # Step A: Conditional Basecalling
+    if [ "$BASECALLED_STATUS" == "no" ]; then
+        # Basecalling required. Submit s01.
+        echo "   -> Basecalling required. Submitting s01.mod_basecalling.sh."
+        A=$(sbatch --parsable --job-name="${project}_basecall" \
+            --output="$LOG_DIR/s01.modbasecalling.out" \
+            --error="$LOG_DIR/s01.modbasecalling.err" \
+            "$SCRIPT_DIR/s01.mod_basecalling.sh" "$workdir" "$project" "$kit_name" "$sample_barcode")
+    else
+        # Basecalling skipped. A remains 0, meaning Step B will run immediately.
+        echo "   -> Basecalling column is set to '$basecalled'. Skipping basecalling (s01)."
+    fi
 
-    # Step B: Alignment (common for both workflows)
+    # Step B: Alignment (Depends on A, which is either the basecalling Job ID or 0)
     B=$(sbatch --parsable --dependency=afterok:$A --job-name="${project}_align" \
         --output="$LOG_DIR/s02.aligner.out" \
         --error="$LOG_DIR/s02.aligner.err" \
@@ -62,7 +83,7 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
             --error="$LOG_DIR/s04.indexing.err" \
             "$SCRIPT_DIR/s04.indexing.sh" "$workdir" "$project" "$sample_barcode")
 
-        # Step E: Parallel Pileup Submission (MODIFIED BLOCK)
+        # Step E: Parallel Pileup Submission
         echo "   -> Submitting parallel pileup jobs."
         E_all=$(sbatch --parsable --dependency=afterok:$D --job-name="${project}_pileup_all" \
             --output="$LOG_DIR/s05a.pileup_all.out" --error="$LOG_DIR/s05a.pileup_all.err" \
@@ -80,14 +101,14 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
             --output="$LOG_DIR/s05d.pileup_chh.out" --error="$LOG_DIR/s05d.pileup_chh.err" \
             "$SCRIPT_DIR/s05d.pileup_chh.sh" "$workdir" "$project" "$sample_barcode" "$reference")
 
-        # Step F: Nanoplot (depends on all four pileup jobs finishing)
+        # Step F: Nanoplot (depends on indexing job finishing)
         F=$(sbatch --parsable --dependency=afterok:$D --job-name="${project}_nanoplot" \
             --output="$LOG_DIR/s06.nanoplot.out" \
             --error="$LOG_DIR/s06.nanoplot.err" \
             "$SCRIPT_DIR/s06.nanoplot.sh" "$workdir" "$project" "$sample_barcode")
 
     else
-        # --- MULTIPLEXED WORKFLOW (Original logic) ---
+        # --- MULTIPLEXED WORKFLOW ---
         echo "   -> Detected multiplexed sample. Including demultiplexing step."
 
         C=$(sbatch --parsable --dependency=afterok:$B --job-name="${project}_demux" \
@@ -100,7 +121,7 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
             --error="$LOG_DIR/s04.indexing.err" \
             "$SCRIPT_DIR/s04.indexing.sh" "$workdir" "$project" "$sample_barcode")
 
-        # Step E: Parallel Pileup Submission (MODIFIED BLOCK)
+        # Step E: Parallel Pileup Submission
         echo "   -> Submitting parallel pileup jobs."
         E_all=$(sbatch --parsable --dependency=afterok:$D --job-name="${project}_pileup_all" \
             --output="$LOG_DIR/s05a.pileup_all.out" --error="$LOG_DIR/s05a.pileup_all.err" \
@@ -118,7 +139,7 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
             --output="$LOG_DIR/s05d.pileup_chh.out" --error="$LOG_DIR/s05d.pileup_chh.err" \
             "$SCRIPT_DIR/s05d.pileup_chh.sh" "$workdir" "$project" "$sample_barcode" "$reference")
 
-        # Step F: Nanoplot (depends on all four pileup jobs finishing)
+        # Step F: Nanoplot (depends on indexing job finishing)
         F=$(sbatch --parsable --dependency=afterok:$D --job-name="${project}_nanoplot" \
             --output="$LOG_DIR/s06.nanoplot.out" \
             --error="$LOG_DIR/s06.nanoplot.err" \
