@@ -3,6 +3,7 @@
 #SBATCH --job-name=Align
 #SBATCH --mem=64G
 #SBATCH --ntasks=1
+#SBATCH -t 2-0:00
 #SBATCH --cpus-per-task=32
 #SBATCH --output=./Logs/s02.aligner.out
 #SBATCH --error=./Logs/s02.aligner.err
