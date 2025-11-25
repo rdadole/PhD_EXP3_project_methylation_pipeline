@@ -48,9 +48,6 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
     mkdir -p "$LOG_DIR"
     mkdir -p "$workdir/analysis"
 
-    # Initialize job ID for Step A (Basecalling/Skip). Start with 0 (satisfied).
-    A=0
-
     # --- Job Submission ---
     
     # Step A: Conditional Basecalling
@@ -61,16 +58,23 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
             --output="$LOG_DIR/s01.modbasecalling.out" \
             --error="$LOG_DIR/s01.modbasecalling.err" \
             "$SCRIPT_DIR/s01.mod_basecalling.sh" "$workdir" "$project" "$kit_name" "$sample_barcode")
+        
+            # Step B: Alignment (Depends on A, which is either the basecalling Job ID or 0)
+        B=$(sbatch --parsable --dependency=afterok:$A --job-name="${project}_align" \
+            --output="$LOG_DIR/s02.aligner.out" \
+            --error="$LOG_DIR/s02.aligner.err" \
+            "$SCRIPT_DIR/s02.aligner.sh" "$workdir" "$project" "$reference")
     else
         # Basecalling skipped. A remains 0, meaning Step B will run immediately.
         echo "   -> Basecalling column is set to '$basecalled'. Skipping basecalling (s01)."
+            # Step B: Alignment (Depends on A, which is either the basecalling Job ID or 0)
+        B=$(sbatch --parsable  --job-name="${project}_align" \
+            --output="$LOG_DIR/s02.aligner.out" \
+            --error="$LOG_DIR/s02.aligner.err" \
+            "$SCRIPT_DIR/s02.aligner.sh" "$workdir" "$project" "$reference")
     fi
 
-    # Step B: Alignment (Depends on A, which is either the basecalling Job ID or 0)
-    B=$(sbatch --parsable --dependency=afterok:$A --job-name="${project}_align" \
-        --output="$LOG_DIR/s02.aligner.out" \
-        --error="$LOG_DIR/s02.aligner.err" \
-        "$SCRIPT_DIR/s02.aligner.sh" "$workdir" "$project" "$reference")
+
 
     # Conditional logic for multiplexed vs. non-multiplexed
     if [ "$sample_barcode" == "NA" ]; then
