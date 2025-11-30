@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -p nvidia
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:a100:1
 #SBATCH --job-name=dorado
 #SBATCH --mem=64G
 #SBATCH --ntasks=1
