@@ -125,24 +125,24 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
 
     # Step E: Parallel Pileup Submission
     echo "   -> Submitting parallel pileup jobs."
-    E_all=$(sbatch --parsable --dependency=afterok:$$FINAL_DEP --job-name="${project}_pileup_all" \
+    E_all=$(sbatch --parsable --dependency=afterok:$FINAL_DEP --job-name="${project}_pileup_all" \
         --output="$LOG_DIR/s05a.pileup_all.out" --error="$LOG_DIR/s05a.pileup_all.err" \
         "$SCRIPT_DIR/s05a.pileup_all.sh" "$workdir" "$project" "$sample_barcode" "$reference")
     
-    E_cg=$(sbatch --parsable --dependency=afterok:$$FINAL_DEP --job-name="${project}_pileup_cg" \
+    E_cg=$(sbatch --parsable --dependency=afterok:$FINAL_DEP --job-name="${project}_pileup_cg" \
         --output="$LOG_DIR/s05b.pileup_cg.out" --error="$LOG_DIR/s05b.pileup_cg.err" \
         "$SCRIPT_DIR/s05b.pileup_cg.sh" "$workdir" "$project" "$sample_barcode" "$reference")
 
-    E_chg=$(sbatch --parsable --dependency=afterok:$$FINAL_DEP --job-name="${project}_pileup_chg" \
+    E_chg=$(sbatch --parsable --dependency=afterok:$FINAL_DEP --job-name="${project}_pileup_chg" \
         --output="$LOG_DIR/s05c.pileup_chg.out" --error="$LOG_DIR/s05c.pileup_chg.err" \
         "$SCRIPT_DIR/s05c.pileup_chg.sh" "$workdir" "$project" "$sample_barcode" "$reference")
 
-    E_chh=$(sbatch --parsable --dependency=afterok:$$FINAL_DEP --job-name="${project}_pileup_chh" \
+    E_chh=$(sbatch --parsable --dependency=afterok:$FINAL_DEP --job-name="${project}_pileup_chh" \
         --output="$LOG_DIR/s05d.pileup_chh.out" --error="$LOG_DIR/s05d.pileup_chh.err" \
         "$SCRIPT_DIR/s05d.pileup_chh.sh" "$workdir" "$project" "$sample_barcode" "$reference")
 
     # Step F: Nanoplot (depends on indexing job finishing)
-    F=$(sbatch --parsable --dependency=afterok:$$FINAL_DEP --job-name="${project}_nanoplot" \
+    F=$(sbatch --parsable --dependency=afterok:$FINAL_DEP --job-name="${project}_nanoplot" \
         --output="$LOG_DIR/s06.nanoplot.out" \
         --error="$LOG_DIR/s06.nanoplot.err" \
         "$SCRIPT_DIR/s06.nanoplot.sh" "$workdir" "$project" "$sample_barcode")
