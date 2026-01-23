@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -p compute
 #SBATCH --job-name=Split_barcode
-#SBATCH --mem=16G
+#SBATCH --mem=32G
 #SBATCH --ntasks=1
 #SBATCH -t 1-0:00
 #SBATCH --cpus-per-task=4

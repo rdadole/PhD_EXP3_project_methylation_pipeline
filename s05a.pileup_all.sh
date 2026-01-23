@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -p compute
 #SBATCH --job-name=Pileup_All
-#SBATCH --mem=32G
+#SBATCH --mem=96G
 #SBATCH -t 2-0:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8

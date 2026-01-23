@@ -2,7 +2,7 @@
 #SBATCH -p compute
 #SBATCH --job-name=Pileup_CHG
 #SBATCH -t 2-0:00
-#SBATCH --mem=32G
+#SBATCH --mem=96G
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
 

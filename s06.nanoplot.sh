@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -p compute
 #SBATCH --job-name=Nanoplot
-#SBATCH --mem=16G
+#SBATCH --mem=96G
 #SBATCH -t 1-0:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8

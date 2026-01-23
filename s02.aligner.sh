@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -p compute
 #SBATCH --job-name=Align
-#SBATCH --mem=64G
+#SBATCH --mem=128G
 #SBATCH --ntasks=1
 #SBATCH -t 2-0:00
 #SBATCH --cpus-per-task=32
