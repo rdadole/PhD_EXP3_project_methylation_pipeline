@@ -42,7 +42,7 @@ for f in *_barcode*.bam unclassified.bam; do
         new_suffix="${f##*_}"
         
         # Construct the new filename and rename the file.
-        mv -- "$f" "${project}_${new_suffix}"
+        mv -f -- "$f" "${project}_${new_suffix}"
         echo "Renamed $f to ${project}_${new_suffix}"
     fi
 done
