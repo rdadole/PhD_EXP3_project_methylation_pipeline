@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH -p compute
 #SBATCH --job-name=Split_barcode
-#SBATCH --mem=32G
+#SBATCH --mem=64G
 #SBATCH --ntasks=1
 #SBATCH -t 1-0:00
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=16
 #SBATCH --output=./Logs/s03.Split_barcode.out
 #SBATCH --error=./Logs/s03.Split_barcode.err
 
