@@ -21,7 +21,7 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
     # Sanitize inputs
     sample_barcode=${sample_barcode%$'\r'}
     do_basecalling=${do_basecalling%$'\r'}
-    BASECALLED_STATUS=$(echo "$do_basecalling" | tr '[:upper:]' '[:lower:]')
+    BASECALLING=$(echo "$do_basecalling" | tr '[:upper:]' '[:lower:]')
 
     echo "================================================="
     echo "  Project: $project"
@@ -36,11 +36,11 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
     DEPENDENCY_FLAG=""
 
     # --- Step A: Scatter-Gather Basecalling ---
-    if [ "$BASECALLED_STATUS" != "yes" && "$BASECALLED_STATUS" != "no"]; then
-        echo "do_basecalling should be either yes or no, the current value is $BASECALLED_STATUS"
+    if [ "$BASECALLING" != "yes" && "$BASECALLING" != "no"]; then
+        echo "do_basecalling should be either yes or no, the current value is $BASECALLING"
         exit
     fi
-    if [ "$BASECALLED_STATUS" == "no" ]; then
+    if [ "$BASECALLING" == "yes" ]; then
         
         echo "   -> preparing $NUM_CHUNKS parallel batches..."
         
