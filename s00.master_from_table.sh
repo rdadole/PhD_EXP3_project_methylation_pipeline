@@ -16,16 +16,15 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 # --- CONFIGURATION ---
 NUM_CHUNKS=3  # How many parallel GPU jobs to run per project?
 
-tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference kit_name sample_barcode basecalled; do
+tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference kit_name sample_barcode do_basecalling; do
     
     # Sanitize inputs
     sample_barcode=${sample_barcode%$'\r'}
-    basecalled=${basecalled%$'\r'}
-    if [ -z "$basecalled" ]; then basecalled="No"; fi
-    BASECALLED_STATUS=$(echo "$basecalled" | tr '[:upper:]' '[:lower:]')
+    do_basecalling=${do_basecalling%$'\r'}
+    BASECALLED_STATUS=$(echo "$do_basecalling" | tr '[:upper:]' '[:lower:]')
 
     echo "================================================="
-    echo "🚀 Project: $project"
+    echo "  Project: $project"
     echo "   Workdir: $workdir"
     echo "   Chunks:  $NUM_CHUNKS (if basecalling)"
     echo "================================================="
@@ -37,6 +36,10 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
     DEPENDENCY_FLAG=""
 
     # --- Step A: Scatter-Gather Basecalling ---
+    if [ "$BASECALLED_STATUS" != "yes" && "$BASECALLED_STATUS" != "no"]; then
+        echo "do_basecalling should be either yes or no, the current value is $BASECALLED_STATUS"
+        exit
+    fi
     if [ "$BASECALLED_STATUS" == "no" ]; then
         
         echo "   -> preparing $NUM_CHUNKS parallel batches..."
@@ -147,9 +150,9 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
         --error="$LOG_DIR/s06.nanoplot.err" \
         "$SCRIPT_DIR/s06.nanoplot.sh" "$workdir" "$project" "$sample_barcode")
 
-    echo "✅ All jobs for project '$project' submitted. Final job IDs: $E_all $E_cg $E_chg $E_chh $F"
+    echo " All jobs for project '$project' submitted. Final job IDs: $E_all $E_cg $E_chg $E_chh $F"
     echo ""
 
 done
 
-echo "🎉 All pipelines have been launched."
+echo " All pipelines have been launched."
