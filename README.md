@@ -17,6 +17,7 @@ Use the table `samples.tsv` (tab-separated) with the following columns:
 | `reference`     | Path to the reference genome FASTA file used for mapping (absolute or repo-relative path). |
 | `kit_name`      | Name of the ONT kit used (e.g. `SQK-RBK114-24`). |
 | `sample_barcode`| Space-separated sample numbers **with two digits each** (e.g. `01 02 03`). If there was no multiplexing, use `NA`. *Note: `01` works but `1` does not — barcodes must be two-digit.* |
+|`do_basecalling`|To do basecalling or skipping it if it was already performed. Take either `yes`or `no` (case insensitive)|
 
 ## Before running
 
@@ -41,10 +42,10 @@ The script will iterate through the rows and perform the configured pipeline for
 
 ## Example `samples_example.tsv` (contents from uploaded file)
 
-| project   | workdir              | reference          | kit_name        | sample_barcode    |
-|---|---|---|---|---|
-| Project_A | /scratch/user/run_A/ | /refs/genome.fasta | SQK-RBK114-24   | 17 18 19 20       |
-| Project_B | /scratch/user/run_B/ | /refs/genome.fasta | SQK-RBK114-24   | NA                |
+| project   | workdir              | reference          | kit_name        | sample_barcode    | do_basecalling|
+|---|---|---|---|---|---|
+| Project_A | /scratch/user/run_A/ | /refs/genome.fasta | SQK-RBK114-24   | 17 18 19 20       | yes           |
+| Project_B | /scratch/user/run_B/ | /refs/genome.fasta | SQK-RBK114-24   | NA                | no            |
 
 ---
 
