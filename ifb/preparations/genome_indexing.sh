@@ -9,7 +9,7 @@
 #SBATCH --error=indexing.err
 
 
-module load samtools/1.18
+module load samtools/1.21
 
 #Path to the reference genome
 reference="/scratch/rd3725/nanopore/ref/GDDH13_1-1_formatted.fasta"

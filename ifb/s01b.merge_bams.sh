@@ -9,7 +9,7 @@
 #SBATCH --error=./Logs/s01b.merge.err
 
 set -e
-module load samtools/1.18
+module load samtools/1.21
 
 workdir=$1
 project=$2

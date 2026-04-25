@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --partition=gpu
+#SBATCH --gres=gpu:l40s:1
 #SBATCH --mem=64G
 #SBATCH --ntasks=1
 #SBATCH -t 3-0:00
 #SBATCH --job-name=dorado_chunk
-#SBATCH --gres=gpu:7g.40gb:1
 #SBATCH --output=./Logs/s01.modbasecalling_%a.out
 #SBATCH --error=./Logs/s01.modbasecalling_%a.err
 

@@ -10,7 +10,7 @@
 
 set -e
 
-module load samtools/1.18
+module load samtools/1.21
 
 # --- Parameters ---
 workdir=$1
