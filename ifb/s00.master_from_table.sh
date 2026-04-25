@@ -16,21 +16,21 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 # --- CONFIGURATION ---
 NUM_CHUNKS=1  # How many parallel GPU jobs to run per project?
 
-tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference kit_name sample_barcode do_basecalling number_chunck; do
-    
+tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference kit_name sample_barcode do_basecalling number_chunk; do
+
     # Sanitize inputs
     sample_barcode=${sample_barcode%$'\r'}
     do_basecalling=${do_basecalling%$'\r'}
-    number_chunck=${number_chunck%$'\r'}
+    number_chunk=${number_chunk%$'\r'}
     BASECALLING=$(echo "$do_basecalling" | tr '[:upper:]' '[:lower:]')
 
-    if [ -r [[ "number_chunk" ]]]; then
+    if [ -z "$number_chunk" ]; then
         echo "Using default number of chunk (n=3)"
         number_chunk=3
-    else if [ -r [[ "number_chunk" =~ ^[0-9]+$ ]]]; then
-    echo "number of chunck is not a number"
-    echo "exiting"
-    exit
+    elif ! [[ "$number_chunk" =~ ^[0-9]+$ ]]; then
+        echo "number of chunk is not a number"
+        echo "exiting"
+        exit 1
     fi
 
     echo "================================================="
@@ -46,9 +46,9 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
     DEPENDENCY_FLAG=""
 
     # --- Step A: Scatter-Gather Basecalling ---
-    if [ "$BASECALLING" != "yes" && "$BASECALLING" != "no"]; then
+    if [ "$BASECALLING" != "yes" ] && [ "$BASECALLING" != "no" ]; then
         echo "do_basecalling should be either yes or no, the current value is $BASECALLING"
-        exit
+        exit 1
     fi
     if [ "$BASECALLING" == "yes" ]; then
         
@@ -102,7 +102,7 @@ tail -n +2 "$SAMPLESHEET" | while IFS=$'\t' read -r project workdir reference ki
         DEPENDENCY_FLAG="--dependency=afterok:$A_MERGE"
 
     else
-        echo "   -> Basecalling skipped ($basecalled)."
+        echo "   -> Basecalling skipped (do_basecalling=$BASECALLING)."
         DEPENDENCY_FLAG=""
     fi
 
