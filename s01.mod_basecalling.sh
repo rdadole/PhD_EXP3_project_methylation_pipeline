@@ -4,6 +4,7 @@
 #SBATCH --job-name=dorado_chunk
 #SBATCH --mem=64G
 #SBATCH --ntasks=1
+#SBATCH --cpus-per-task 16
 #SBATCH -t 4-0:00
 #SBATCH --output=./Logs/s01.modbasecalling_%a.out
 #SBATCH --error=./Logs/s01.modbasecalling_%a.err
